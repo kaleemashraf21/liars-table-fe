@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
@@ -8,12 +12,24 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate("Home");
-    } catch (err: any) {
-      setError(err.message);
+      const result = await signInWithPopup(auth, GoogleAuthProvider);
+      console.log(result);
+      const token = await result.user.getIdToken();
+
+      const response = await fetch("http://localhost:3001/api/protected", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+
+      const userData = await response.json();
+      console.log("User Data:", userData);
+    } catch (error) {
+      console.error("Error during sign-in:", error);
     }
   };
 
