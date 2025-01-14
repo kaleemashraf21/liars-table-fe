@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDxqcELFLO8KdVmrKBzYv84_cQcIsIzL24",
   authDomain: "liars-table-be.firebaseapp.com",
   projectId: "liars-table-be",
@@ -11,4 +11,5 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
