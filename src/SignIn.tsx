@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
@@ -9,7 +13,7 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
   const [error, setError] = useState<string>("");
   const [token, setToken] = useState<string>("");
 
-  const handleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const currentUser = auth.currentUser;
@@ -30,6 +34,7 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
       }
     } catch (err: any) {
       setError(err.message);
+
     }
   };
 
