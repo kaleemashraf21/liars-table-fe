@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet, TextInput } from "react-native";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 
 const HomeScreen = ({ navigation }: { navigation: any }) => {
@@ -13,7 +9,6 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [error, setError] = useState<string>("");
   const [authorised, setAuthorised] = useState<boolean>(false);
 
-  // Listen for authentication state changes using Firebase Auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

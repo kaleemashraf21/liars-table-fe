@@ -7,11 +7,27 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
 
   const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      navigation.navigate("SignIn");
+      const currentUser = auth.currentUser;
+      navigation.navigate("Home");
+      if (currentUser) {
+        const idToken = await currentUser.getIdToken();
+        setToken(idToken);
+        const response = await fetch("http://localhost:8080/api/protected", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const responseData = await response.json();
+        console.log("Backend Response:", responseData);
+      }
     } catch (err: any) {
       setError(err.message);
     }
