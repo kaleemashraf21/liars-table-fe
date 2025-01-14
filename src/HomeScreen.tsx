@@ -1,57 +1,64 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { firebaseConfig } from "./config/firebaseConfig";
-import Users from "./Users";
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import React, { useState, useEffect } from "react";
+import { View, Text, Button, StyleSheet, TextInput } from "react-native";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "./config/firebaseConfig";
 
 const HomeScreen = ({ navigation }: { navigation: any }) => {
-  const [authorised, setAuthorised] = useState(false || window.localStorage.getItem("auth")==="true");
-  const [token, setToken] = useState('')
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [authorised, setAuthorised] = useState<boolean>(false);
 
+  // Listen for authentication state changes using Firebase Auth
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (userCred) => {
-      if (userCred) {
-        setAuthorised(true);
-        window.localStorage.setItem("auth", "true")
-        userCred.getIdToken().then((token) => {
-          console.log(token)
-          setToken(token)
-        })
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthorised(true); // User is logged in
       } else {
-        setAuthorised(false);
+        setAuthorised(false); // User is not logged in
       }
     });
 
-    return () => unsubscribe();
-  }, []); 
+    return () => unsubscribe(); // Clean up the listener on unmount
+  }, []);
 
-
-  const loginWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((userCred) => {
-        console.log(userCred);
-        window.localStorage.setItem("auth", "true")
-        setAuthorised(true);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+  const handleSignIn = async () => {
+    try {
+      // Sign in with email and password
+      await signInWithEmailAndPassword(auth, email, password);
+      setAuthorised(true); // Set the user as authorised
+      navigation.navigate("Home"); // Navigate to Home screen on successful sign-in
+    } catch (err: any) {
+      setError(err.message); // Handle error and show it to the user
+    }
   };
 
   return (
     <View style={styles.container}>
       {authorised ? (
-        <>
-        <Text>Welcome to cards</Text>
-        <Users token={token}/>
-        </>
+        <Text>Welcome, you are logged in!</Text>
       ) : (
-        <Button title="Login with Google" onPress={loginWithGoogle} />
+        <>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          <Button title="Sign In" onPress={handleSignIn} />
+        </>
       )}
     </View>
   );
@@ -62,6 +69,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 16,
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+    width: "80%",
+  },
+  error: {
+    color: "red",
+    marginBottom: 12,
   },
 });
 

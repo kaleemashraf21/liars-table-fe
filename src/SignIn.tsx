@@ -4,14 +4,30 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [token, setToken] = useState<string>("");
 
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      const currentUser = auth.currentUser;
       navigation.navigate("Home");
+      if (currentUser) {
+        const idToken = await currentUser.getIdToken();
+        setToken(idToken);
+        const response = await fetch("http://localhost:8080/api/protected", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const responseData = await response.json();
+        console.log("Backend Response:", responseData);
+      }
     } catch (err: any) {
       setError(err.message);
     }
