@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { fetchUserByEmail } from "../api";
 
 const HomeScreen = ({ route }: { route: any }) => {
-  // const { userEmail } = route.params;
-  console.log(route);
   return (
     <View style={styles.container}>
       <Text style={styles.welcome}>Welcome, !</Text>

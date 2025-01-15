@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
@@ -8,31 +8,40 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [token, setToken] = useState("");
+  const [username, setUsername] = useState("");
+
+  const avatar =
+    "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png";
 
   const handleSignUp = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      const currentUser = auth.currentUser;
-      navigation.navigate("Home");
-      if (currentUser) {
-        const idToken = await currentUser.getIdToken();
-        setToken(idToken);
-        const response = await fetch(
-          "https://liars-table-be.onrender.com/api/users",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${idToken}`,
-            },
-            body: JSON.stringify({ email, password }),
-          }
-        );
-        const responseData = await response.json();
-        console.log("Backend Response:", responseData);
+    if (username !== "" && password !== "" && email !== "") {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        const currentUser = auth.currentUser;
+        navigation.navigate("Home");
+        if (currentUser) {
+          const idToken = await currentUser.getIdToken();
+          setToken(idToken);
+          const response = await fetch(
+            "https://liars-table-be.onrender.com/api/users",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({ email, username, avatar }),
+            }
+          );
+          console.log(avatar);
+          const responseData = await response.json();
+          console.log("Backend Response:", responseData);
+        }
+      } catch (err: any) {
+        setError(err.message);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } else {
+      setError("pleaase complete all relevent fields");
     }
   };
 
@@ -52,6 +61,13 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
         secureTextEntry
         style={styles.input}
       />
+      <TextInput
+        placeholder="username"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+      />
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Sign Up" onPress={handleSignUp} />
       <Button
