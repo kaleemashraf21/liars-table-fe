@@ -18,7 +18,7 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         const currentUser = auth.currentUser;
-        navigation.navigate("Home");
+        navigation.navigate("SignIn");
         if (currentUser) {
           const idToken = await currentUser.getIdToken();
           setToken(idToken);
@@ -33,9 +33,8 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
               body: JSON.stringify({ email, username, avatar }),
             }
           );
-          console.log(avatar);
           const responseData = await response.json();
-          console.log("Backend Response:", responseData);
+          console.log("new user:", responseData);
         }
       } catch (err: any) {
         setError(err.message);

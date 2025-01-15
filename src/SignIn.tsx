@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 import { fetchUserByEmail } from "../api";
+import { UserContext } from "./UserContext";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error("UserContext is undefined");
+  }
+  const { user, setUser } = userContext;
 
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigation.navigate("Home");
       fetchUserByEmail(email).then((response) => {
-        console.log(response);
+        // setUser(response);
+        console.log("sign in", response);
       });
     } catch (err: any) {
       setError("incorrect email or password");
