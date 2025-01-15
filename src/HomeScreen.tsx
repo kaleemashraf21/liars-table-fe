@@ -1,5 +1,7 @@
+
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+
 
 const HomeScreen = ({ route }: { route: any }) => {
   const { userEmail } = route.params;
