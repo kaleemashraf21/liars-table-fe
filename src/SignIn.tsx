@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
+import { fetchUserByEmail } from "../api";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,9 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigation.navigate("Home");
+      fetchUserByEmail(email).then((response) => {
+        console.log(response);
+      });
     } catch (err: any) {
       setError("incorrect email or password");
     }
