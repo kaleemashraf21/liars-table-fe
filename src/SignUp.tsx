@@ -17,14 +17,17 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
       if (currentUser) {
         const idToken = await currentUser.getIdToken();
         setToken(idToken);
-        const response = await fetch("http://localhost:8080/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        const response = await fetch(
+          "https://liars-table-be.onrender.com/api/users",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+            body: JSON.stringify({ email, password }),
+          }
+        );
         const responseData = await response.json();
         console.log("Backend Response:", responseData);
       }

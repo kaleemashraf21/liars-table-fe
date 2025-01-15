@@ -11,9 +11,9 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.navigate("Home", { userEmail: email });
+      navigation.navigate("Home");
     } catch (err: any) {
-      setError(err.message);
+      setError("incorrect email or password");
     }
   };
 

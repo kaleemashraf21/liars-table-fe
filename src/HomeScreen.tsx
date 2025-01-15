@@ -1,13 +1,12 @@
-
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-
 const HomeScreen = ({ route }: { route: any }) => {
-  const { userEmail } = route.params;
+  // const { userEmail } = route.params;
+  console.log(route);
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome, {userEmail}!</Text>
+      <Text style={styles.welcome}>Welcome, !</Text>
       <Text>You're now logged in to Liar's Table.</Text>
     </View>
   );
