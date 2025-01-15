@@ -17,7 +17,7 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
       if (currentUser) {
         const idToken = await currentUser.getIdToken();
         setToken(idToken);
-        const response = await fetch("http://localhost:8080/api/protected", {
+        const response = await fetch("http://localhost:8080/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -35,6 +35,7 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Create Your Account</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -50,12 +51,17 @@ const SignUpScreen = ({ navigation }: { navigation: any }) => {
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Sign Up" onPress={handleSignUp} />
+      <Button
+        title="Already have an account? Sign In"
+        onPress={() => navigation.navigate("SignIn")}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 16 },
+  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
   input: {
     height: 40,
     borderColor: "gray",

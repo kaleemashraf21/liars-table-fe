@@ -4,30 +4,14 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./config/firebaseConfig";
 
 const SignInScreen = ({ navigation }: { navigation: any }) => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [token, setToken] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSignIn = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      const currentUser = auth.currentUser;
-      navigation.navigate("Home");
-      if (currentUser) {
-        const idToken = await currentUser.getIdToken();
-        setToken(idToken);
-        const response = await fetch("http://localhost:8080/api/protected", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({ email, password }),
-        });
-        const responseData = await response.json();
-        console.log("Backend Response:", responseData);
-      }
+      navigation.navigate("Home", { userEmail: email });
     } catch (err: any) {
       setError(err.message);
     }
@@ -35,6 +19,7 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to Liar's Table</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -50,12 +35,17 @@ const SignInScreen = ({ navigation }: { navigation: any }) => {
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Sign In" onPress={handleSignIn} />
+      <Button
+        title="Don't have an account? Sign Up"
+        onPress={() => navigation.navigate("SignUp")}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 16 },
+  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
   input: {
     height: 40,
     borderColor: "gray",
